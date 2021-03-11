@@ -1,0 +1,352 @@
+---
+title: "Lab-5"
+author: "Rathod Dharmraj"
+date: "2/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#Question-01 Central limit theorem:
+(A) Generate mean subtracted X1, X2, ..., XN
+uniformly distributed, i.e., U[0, 1], IID random variables. Generate at
+least 10000 samples for each of the random variables and let N = 25.
+```{R}
+library(tibble)
+library(ggplot2)
+N = 25
+Nr =10000
+random_variables <-matrix(rep(0,25000),nrow = Nr,ncol =N)
+for(i in 1:N)
+{
+  random_variables[,i] <- runif(Nr,0,1)
+  random_variables[,i] <- (random_variables[,i]- mean(random_variables[,i])) 
+}
+
+
+anotherrandom <-matrix(rep(0,25000),nrow = Nr,ncol =N)
+for(i in 1:N){
+Ytemp <- 0  
+  for(j in 1:i){
+    Ytemp <- Ytemp + random_variables[,j]
+  }
+  anotherrandom[,i] <- Ytemp
+  
+ p<-ggplot(data=data.frame(data=Ytemp),aes(x=data))+
+   geom_histogram(aes(y=stat(ndensity)),bins=10)+
+   geom_density(aes(y=stat(scaled)),fill = "blue",alpha = 0.4)
+plot(p)
+
+}
+
+```
+
+We can see here for the large amount of data distribution is following the normal distribution. for uniform distribution with IID. 
+
+
+```{R}
+
+
+```
+
+
+(B) Repeat the above experiment for mean subtracted independent random variables, with different distributions, e.g., Uniform, Laplacian, etc.
+
+Compare your results with the above experiment.
+
+
+```{R}
+Nr = 10000
+N=25
+library("rmutil")
+random_variables <-matrix(rep(1,25000),nrow = Nr,ncol =N)
+for(i in 1:N)
+{ 
+  if(i %% 3 == 1)
+    {
+      random_variables[,i] <- runif(Nr,0.5,1)
+    }
+  if(i %% 3 == 2)
+    {
+      random_variables[,i] <- rnorm(Nr,0,1)
+    }
+  if(i %% 3 == 0)
+    {
+      random_variables[,i] <- rlaplace(Nr,2,1)
+    }
+ 
+  random_variables[,i] <- (random_variables[,i]- mean(random_variables[,i]))
+}
+
+anotherrandom <-matrix(rep(0,25000),nrow = Nr,ncol =N)
+for(i in 1:N){
+Ytemp <- 0  
+  for(j in 1:i){
+    Ytemp <- Ytemp + random_variables[,j]
+  }
+  anotherrandom[,i] <- Ytemp
+  
+ p<-ggplot(data=data.frame(data=Ytemp),aes(x=data))+
+   geom_histogram(aes(y=stat(ndensity)),bins=10)+
+   geom_density(aes(y=stat(scaled)),fill = "blue",alpha = 0.4)
+plot(p)
+
+}
+```
+
+again we see for different distribution also for the large value of the data we are getting the normal distrubution for its pdf.
+
+
+
+
+
+(C) Finally, perform the same experiment for dependent random vari-
+ables and compare your results. For example, X1 ∼ U[−1, 1]; X2 =2X1; X3 = X1 + X2 + 3, and likewise.
+```{R}
+
+
+random_variables[,1]<-runif(10000,-1,1)
+random_variables[,2]<-2*random_variables[,1]
+random_variables[,3]<-random_variables[,1]+random_variables[,2] + 3
+random_variables[,4]<-random_variables[,2]+random_variables[,3] 
+
+
+
+
+for (i in c(5:N)){
+ if(i %% 3 == 1){
+  random_variables[,i] <-random_variables[,2] +i 
+  } 
+  if(i %% 3 == 2){
+    random_variables[,i]<-random_variables[,3] + i 
+  }
+  if(i %% 3 == 0){
+    random_variables[,i]<-random_variables[,4] + i
+  }
+  random_variables[,i]<-random_variables[,i]-mean(random_variables[,i])
+} 
+
+
+
+
+
+anotherrandom <-matrix(rep(0,25000),nrow = Nr,ncol =N)
+for(i in 1:N){
+Ytemp <- 0  
+  for(j in 1:i){
+    Ytemp <- Ytemp + random_variables[,j]
+  }
+  anotherrandom[,i] <- Ytemp
+  
+ p<-ggplot(data=data.frame(data=Ytemp),aes(x=data))+
+   geom_histogram(aes(y=stat(ndensity)),bins=10)+
+   geom_density(aes(y=stat(scaled)),fill = "blue",alpha = 0.4)
+plot(p)
+
+}
+
+```
+so we can see for dependent random variable pdf is not following the normal distribution.
+
+
+#Q. 2: Sampling distribution of mean: 
+A manufacturing process produces cylindrical component parts for the
+automobile industry. It is required to produce the parts with a mean
+diameter of 5.0 mm. It is known that the population standard deviation
+is σ = 0.1 mm. The engineer involved conjectures that the population
+mean is 5.0 mm.
+
+A)An experiment is conducted in which 100 parts produced are selected
+randomly and the diameter measured in each. Generate uniformly distributed 100 random numbers to represent the diameter using available
+information and compute a sample average diameter. Does this sample
+information appear to support or refute the engineer’s conjecture? Draw
+necessary plots.
+
+
+```{R}
+
+
+mean = 5.0 #a+b/2
+sd = 0.1 #variance = (b-a)^2/12
+b=round(5+0.1*sqrt(3),2)
+a=10-b
+
+
+set.seed(1)
+diameter<-runif(100,min=a,max=b)
+sample_avg_diameter<-mean(diameter)
+sample_variance<-var(diameter)
+
+p<-ggplot(data=data.frame(data=diameter),aes(x=diameter))+
+   geom_histogram(aes(y=stat(ndensity)),bins=10)+
+   geom_density(aes(y=stat(scaled)),fill = "blue",alpha = 0.4)
+plot(p)
+
+zs<-(sample_avg_diameter-mean)/(sd/sqrt(100)) #zscore
+pnorm(zs) #Getting the probability value
+print(sample_avg_diameter-zs)
+
+
+```
+it is not supporting the conjucture. becuase the value of zscore is very low.
+
+
+
+
+(B)Generate the sampling distribution of mean by repeating the above
+random experiment several times. Based on the sample mean obtained
+thus, comment on the engineer’s conjecture? Draw necessary plots.
+
+```{R}
+
+set.seed(1)
+samplingmean<-function(s,n,a=4.83,b=5.17){ #s is no of simulation and n is the no of trials
+  meantable<-matrix(data=NA, nrow = s,ncol=3)
+  colnames(meantable)<-c('Mean','Zscore','PVAL')
+  for (i in c(1:s)){
+    diameter<-diameter<-runif(n,min=a,max=b)
+    meantable[i,1]<-mean(diameter)
+    meantable[i,2]<-(mean(diameter)-(a+b)/2)/(0.1/sqrt(n))
+    meantable[i,3]<-pnorm(meantable[i,2])
+  }
+  p<-ggplot(data=data.frame(data=meantable[,1]),aes(x=meantable[,1]))+
+   geom_histogram(aes(y=stat(ndensity)),bins=10)+
+   geom_density(aes(y=stat(scaled)),fill = "blue",alpha = 0.4)
+plot(p)
+  return(meantable)
+}
+data<-samplingmean(100,100)
+summary(data)
+samplemean<-mean(data[,1])
+zs<-(samplemean-mean)/(sd/sqrt(100)) #Z score
+print(pnorm(zs))
+
+
+
+```
+it is also not supporting the conjecture.
+
+```{R}
+
+data<-samplingmean(1000,100)
+summary(data)
+samplemean<-mean(data[,1])
+zs<-(samplemean-mean)/(sd/sqrt(100)) #Z score
+print(pnorm(zs))
+
+```
+
+
+in this it is supporting the conjecture.
+
+
+#Q-3Sampling distribution of the difference between two means:
+Consider two populations with certain probability distributions P1(Ω)
+and P2(Ω). Draw two independent random samples of size n1 and n2
+from each population, respectively. Now, generate the sampling distributions 
+of differences of the two means under following cases, and
+comment on the Normal approximation of the sampling distribution of
+difference between two means
+
+(A) For P1(Ω) ∼ N(5, 1) and P2(Ω) ∼ N(3, 1), and for n1 < 30 and n2 < 30.
+
+
+```{R}
+
+set.seed(1)
+
+n =20
+m1 = 5
+s1 = 1
+m2 = 3
+s2 = 1
+num_exp = 500
+mean_diff = 0 * c(1:n)
+for(i in c(1:n)){
+  temp1 = rnorm(num_exp, mean = m1, sd = s1)
+  temp2 = rnorm(num_exp, mean = m2, sd = s2)
+  mean_diff[i] = mean(temp1) - mean(temp2)
+}
+p1 <- ggplot(data = data.frame(x = mean_diff), aes(x = x))+
+  geom_histogram(aes(y = stat(ndensity)), bins = 15)+
+  geom_density(aes(y = stat(scaled)), fill = "blue", alpha = 0.15)
+plot(p1)
+```
+(B)Repeat part (A) for non-normal populations while keeping other settings the same.
+
+```{R}
+
+set.seed(1)
+n = 20
+m1 = 5
+s1 = 1
+m2 = 3
+s2 = 1
+num_exp = 500
+mean_diff = 0 * c(1:n)
+for(i in c(1:n)){
+  temp1 = runif(num_exp, min = 2, max = 8)
+  temp2 = runif(num_exp, min = 1, max = 5)
+  mean_diff[i] = mean(temp1) - mean(temp2)
+}
+p2 <- ggplot(data = data.frame(x = mean_diff), aes(x = x))+
+  geom_histogram(aes(y = stat(ndensity)), bins = 12)+
+  geom_density(aes(y = stat(scaled)), fill = "orange", alpha = 0.15)
+plot(p2)
+```
+(C) For P1(Ω) ∼ N(5, 1) and P2(Ω) ∼ N(3, 1), and for n1 ≥ 30 and n2 ≥ 30.
+
+```{R}
+set.seed(1)
+n = 500
+m1 = 5
+s1 = 1
+m2 = 3
+s2 = 1
+num_exp = 500
+mean_diff = 0 * c(1:n)
+for(i in c(1:n)){
+  temp1 = rnorm(num_exp, mean = m1, sd = s1)
+  temp2 = rnorm(num_exp, mean = m2, sd = s2)
+  mean_diff[i] = mean(temp1) - mean(temp2)
+}
+p3 <- ggplot(data = data.frame(x = mean_diff), aes(x = x))+
+  geom_histogram(aes(y = stat(ndensity)), bins = 25)+
+  geom_density(aes(y = stat(scaled)), fill = "pink", alpha = 0.15)
+plot(p3)
+```
+(D) Repeat part (C) for non-normal populations while keeping other settings the same.
+```{R}
+set.seed(1)
+n = 500
+m1 = 5
+s1 = 1
+m2 = 3
+s2 = 1
+num_exp = 500
+mean_diff = 0 * c(1:n)
+for(i in c(1:n)){
+  temp1 = runif(num_exp, min = 2, max = 8)
+  temp2 = runif(num_exp, min = 1, max = 5)
+  mean_diff[i] = mean(temp1) - mean(temp2)
+}
+p4 <- ggplot(data = data.frame(x = mean_diff), aes(x = x))+
+  geom_histogram(aes(y = stat(ndensity)), bins = 30)+
+  geom_density(aes(y = stat(scaled)), fill = "brown", alpha = 0.15)
+  
+plot(p4)
+```
+
+```{R}
+#ggarrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+```
+If both n1 ≥ 30 and n2 ≥ 30 then the Normal approximation is very good and evident regardless of populations distributions.
+If both populations P follow Normal distribution then regardless of the size of sample,it is Normally approximated,in 1 and 4.
+If populations are non-normal and n1 ≤ 30 and n2 ≤ 30 Normal approximation of difference of
+means is not good.
+
+
+

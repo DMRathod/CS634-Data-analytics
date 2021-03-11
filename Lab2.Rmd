@@ -1,0 +1,248 @@
+---
+title: "Data Analytics & visualization CS634(LAB_2)"
+author: "Rathod Dharmraj 202061008 Mtech CSE"
+date: "1/31/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+Question (1)        
+
+Use various dataset available in R to Construct following plots:
+
+(1) Scatter Plot
+(2) Violin Plot
+(2) Q-Q Plot
+
+
+Dataset = faithfull
+
+
+```{R}
+#faithful
+plot(faithful$waiting, faithful$eruptions, pch = 21, col = 4, cex = 1.5, xlab = "waiting time", ylab = "eruption time")
+grid()
+
+```
+
+
+we can see there are two clear clusters. 
+The first cluster is of shorter wait time so, shorter eruption time.
+The second cluster is of longer wait time and as a result, a longer eruption time.
+ “if the geyser waits a longer time before erupting, more pressure builds up and when it is finally released there will be longer eruption”.
+ 
+```{R}
+#ChickWeight 
+library(ggplot2)
+ggplot(ChickWeight, aes(x =weight, y = Time),color=cyl) +
+    geom_point(aes(color = factor(Diet)))
+```
+
+
+plot is showing that how the different diet differ with time.
+
+
+```{R}
+#Orange 
+library(ggplot2)
+ggplot(Orange, aes(x =age, y = circumference,color=cyl)) +
+geom_point(aes(color = factor(Tree)))
+```
+
+
+
+with this plot we can understand how circumference of the tree is increasing with its age.
+
+
+```{R}
+#pressure                 
+library(ggplot2)
+ggplot(pressure, aes(x =temperature , y = pressure)) +
+geom_point(aes(color = 2),pch =17)
+
+```
+
+
+with this plot we can understnad that after 200 temperature the pressure is increasing exponentially.
+
+
+
+
+
+
+
+
+```{R}
+#cars
+library(ggplot2)
+ggplot(cars, aes(x =speed , y = dist,color=cyl)) +
+geom_point(aes(color='red'),pch =19)
+```
+
+
+
+here we can see scatter plot distance vs speed. how much ft cars is going after pressing the break.
+
+
+
+```{R}
+library(vioplot)
+#InsectSprays
+vioplot(InsectSprays$count[InsectSprays$spray=="A"], InsectSprays$count[InsectSprays$spray=="B"],InsectSprays$count[InsectSprays$spray=="C"],InsectSprays$count[InsectSprays$spray=="D"],InsectSprays$count[InsectSprays$spray=="E"],InsectSprays$count[InsectSprays$spray=="F"], names=c("A", "B","C","D","E","F"),col="lightblue", border="royalblue")
+grid()
+
+
+``` 
+
+
+
+by this violin plot we can say that how the values of one insecticides changes with another what is the distribution of that insecticides and we can compare with others.
+```{R}
+#Puromycin
+library(ggplot2)
+ggplot(diamonds,aes(x= cut,y=price,fill = cut))+geom_violin()+geom_boxplot(width = 0.1)
+
+
+ggplot(diamonds,aes(x= cut,y=carat,fill = cut))+geom_violin()+geom_boxplot(width = 0.1)
+
+
+```
+Here in figure 2 we can see outliers and distribution of the cut over carat and  in figure one we can see distribution of the cut over price.
+
+
+
+
+
+```{R}
+vioplot(PlantGrowth$weight[PlantGrowth$group=="ctrl"],PlantGrowth$weight[PlantGrowth$group=="trt1"],PlantGrowth$weight[PlantGrowth$group=="trt2"],names=c("ctrl","trt1","trt2"),col="lightblue", border="blue")
+grid()
+  
+
+```
+ 
+ 
+ 
+ 
+```{R}
+#ToothGrowth                
+vioplot(ToothGrowth$len[ToothGrowth$supp=="VC"],ToothGrowth$len[ToothGrowth$supp=="OJ"],names=c("VC","OJ"),col="lightblue", border="royalblue")
+grid()
+
+vioplot(ToothGrowth$dose[ToothGrowth$supp=="VC"],ToothGrowth$dose[ToothGrowth$supp=="OJ"],names=c("VC","OJ"),col="lightblue", border="royalblue")
+grid()
+
+```
+```{R}
+#randu   
+
+qqnorm(randu$x,col=2)
+qqline(randu$x)
+grid()
+
+qqnorm(randu$y,col=3)
+qqline(randu$y)
+grid()
+
+qqnorm(randu$z,col=4)
+qqline(randu$z)
+grid()
+```
+```{R}
+#ToothGrowth                
+qqnorm(ToothGrowth$len,col=10)
+qqline(ToothGrowth$len)
+grid()
+```
+```{R}
+#trees   
+
+qqnorm(trees$Girth,col=2)
+qqline(trees$Girth)
+grid()
+
+qqnorm(trees$Height,col=3)
+qqline(trees$Height)
+grid()
+
+qqnorm(trees$Volume,col=4)
+qqline(trees$Volume)
+grid()
+```
+
+
+
+
+
+Question (2)
+Generate N number of random samples with different parameters and plot Q-Q plot with comparison to standard Normal Distribution.
+```{R}
+sampledata <-rnorm(1000,0,1)
+sampledatan <-runif(1000,0,1)
+hist(sampledata)
+qqnorm(sampledata,col=3)
+qqline(sampledata)
+grid()
+
+hist(sampledatan)
+qqnorm(sampledatan,col=4)
+qqline(sampledatan)
+grid()
+```
+
+
+this is how we can identify the normal distribution using q-q plot.
+
+
+
+
+
+```{R}
+library(tibble)
+randomvariables<-matrix(data=rep(0,25000), nrow = 100, ncol = 5)
+for (i in c(1:5)){
+  if(i%%2==0){
+  randomvariables[,i] <-rnorm(100, 0.5, 0.2) 
+  } else{
+    randomvariables[,i]<-runif(100,0,1)
+  }
+  #randomvariables[,i]<-randomvariables[,i]-mean(randomvariables[,i])
+} 
+
+
+samplespacemixed<-data.frame(data=randomvariables)
+
+qqnorm(samplespacemixed$data.1,col =2)
+qqline(samplespacemixed$data.1)
+grid()
+
+qqnorm(samplespacemixed$data.2,col =3)
+qqline(samplespacemixed$data.2)
+grid()
+qqnorm(samplespacemixed$data.3,col =4)
+qqline(samplespacemixed$data.3)
+grid()
+qqnorm(samplespacemixed$data.4,col =5)
+qqline(samplespacemixed$data.4)
+grid()
+qqnorm(samplespacemixed$data.5,col =10)
+qqline(samplespacemixed$data.5)
+```
+
+
+
+this are the five different plots by which we can understand that is it follow the normal distribution or not. if it is no qqline then it is normal distribution otherwise not. we can say that 2 and 4th dataset slightly follows the normal distribution and others are not following.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
